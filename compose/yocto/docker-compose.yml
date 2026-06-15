@@ -1,0 +1,66 @@
+# /opt/docker/driverless-ws/compose/yocto/docker-compose.yml
+name: yocto
+
+services:
+  yocto:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_UID: ${USER_UID:-1000}
+        USER_GID: ${USER_GID:-1000}
+    image: mmr-yocto-builder:nanbield
+    container_name: yocto
+    hostname: yocto
+
+    env_file:
+      - .env
+
+    environment:
+      # `setupsdk` regenerates build/conf/local.conf on every `source`, so
+      # path overrides must come from the environment. Variables listed in
+      # BB_ENV_PASSTHROUGH_ADDITIONS are imported by BitBake and override the
+      # weak (?=) defaults, placing downloads and sstate OUTSIDE build/ so
+      # they survive a `rm -rf build`.
+      BB_ENV_PASSTHROUGH_ADDITIONS: "DL_DIR SSTATE_DIR"
+      DL_DIR: /workspace/cache/downloads
+      SSTATE_DIR: /workspace/cache/sstate-cache
+
+    volumes:
+      # All Yocto state (sources, build tree, downloads, sstate) lives here
+      - /opt/docker/driverless-ws/data/yocto:/workspace
+
+    working_dir: /workspace
+
+    # ----- Resource limits ---------------------------------------------------
+    # CFS quota: the container may use at most 20 cores' worth of CPU time,
+    # scheduled on ANY of the 24 cores (better throughput/cache behavior than
+    # pinning). Matches BB_NUMBER_THREADS=20 / PARALLEL_MAKE=-j20 in local.conf.
+    cpus: "20"
+    # Alternative — hard-pin to specific cores instead (mutually exclusive
+    # in spirit; pick one):
+    # cpuset: "0-19"
+    #
+    # Optional: cap RAM too. Yocto OOM during nodejs/qt5/kernel link steps is
+    # a real risk you've hit before — uncomment and size to taste:
+    # mem_limit: 48g
+    # memswap_limit: 48g
+
+    # ----- Required for BitBake >= kirkstone inside Docker -------------------
+    # nanbield's network isolation runs non-fetch tasks inside unprivileged
+    # user namespaces (unshare). Docker's default seccomp/AppArmor profiles
+    # block that, producing "PermissionError: ... unshare" / pseudo failures.
+    security_opt:
+      - seccomp=unconfined
+      - apparmor=unconfined
+
+    # BitBake warns/fails with low fd limits on large builds
+    ulimits:
+      nofile:
+        soft: 8192
+        hard: 16384
+
+    init: true
+    stdin_open: true
+    tty: true
+    command: bash

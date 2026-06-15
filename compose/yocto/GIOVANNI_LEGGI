@@ -1,0 +1,6 @@
+pltform.xsa nel gitignore manca, per aggiungerlo:
+
+cp platform.xsa /opt/docker/driverless-ws/data/yocto/mmr-kria-os/platform/platform.xsa
+
+- la cartella data/yocto è condivisa tra il container e host
+- se vuoi cambiare il token dentro .env per usare uno tuo, io ho usato un token classic con accesso di tipo "repo"
