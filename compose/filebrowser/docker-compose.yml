@@ -1,0 +1,11 @@
+services:
+  filebrowser:
+    container_name: filebrowser
+    image: filebrowser/filebrowser:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - /opt/docker/driverless-ws/data/filebrowser/files:/srv
+      - /opt/docker/driverless-ws/data/filebrowser/db:/database
+    user: "1000:1000"
+    restart: unless-stopped
