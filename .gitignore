@@ -1,4 +1,10 @@
 .env
 
-data/*
-!*gitkeep
+data/yocto/*
+!data/yocto/.gitkeep
+
+data/portainer-io/*
+!data/portainer-io/.gitkeep  
+
+data/filebrowser/*
+!data/filebrowser/.gitkeep

@@ -9,9 +9,9 @@ if [ -n "${GIT_TOKEN}" ]; then
     # Rewrite ALL three github.com URL forms to authenticated https, so it
     # also covers recipes fetching with protocol=ssh (ssh://git@github.com/)
     # and scp-style submodule URLs (git@github.com:), not just https://.
-    git config --global url."${AUTH_URL}".insteadOf "https://github.com/"
-    git config --global --add url."${AUTH_URL}".insteadOf "git@github.com:"
-    git config --global --add url."${AUTH_URL}".insteadOf "ssh://git@github.com/"
+    git config --global --replace-all url."${AUTH_URL}".insteadOf "https://github.com/"
+    git config --global --replace-all url."${AUTH_URL}".insteadOf "git@github.com:"
+    git config --global --replace-all url."${AUTH_URL}".insteadOf "ssh://git@github.com/"
 fi
 
 # Fallback for real SSH usage (mounted key or forwarded agent): pre-trust

@@ -36,7 +36,7 @@ services:
     # CFS quota: the container may use at most 20 cores' worth of CPU time,
     # scheduled on ANY of the 24 cores (better throughput/cache behavior than
     # pinning). Matches BB_NUMBER_THREADS=20 / PARALLEL_MAKE=-j20 in local.conf.
-    cpus: "20"
+    cpus: "16"
     # Alternative — hard-pin to specific cores instead (mutually exclusive
     # in spirit; pick one):
     # cpuset: "0-19"
